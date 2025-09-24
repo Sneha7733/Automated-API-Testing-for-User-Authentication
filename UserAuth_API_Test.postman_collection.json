@@ -1,0 +1,65 @@
+{
+  "info": {
+    "name": "User Authentication API Tests",
+    "_postman_id": "550e8400-e29b-41d4-a716-446655440000",
+    "description": "Automated API Testing for User Authentication on https://reqres.in",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Test Case 1: Valid login",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type","value": "application/json"}],
+        "body": {"mode": "raw","raw": "{\n  \"email\": \"eve.holt@reqres.in\",\n  \"password\": \"cityslicka\"\n}"},
+        "url": {"raw": "https://reqres.in/api/login","protocol": "https","host": ["reqres","in"],"path": ["api","login"]}
+      },
+      "response": [],
+      "event": [{"listen": "test","script": {"exec": ["pm.test('Status code is 200', function () { pm.response.to.have.status(200); });","pm.test('Response has token', function () { var jsonData = pm.response.json(); pm.expect(jsonData).to.have.property('token'); });"],"type": "text/javascript"}}]
+    },
+    {
+      "name": "Test Case 2: Invalid Login (Wrong Email & Password)",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type","value": "application/json"}],
+        "body": {"mode": "raw","raw": "{\n  \"email\": \"wrong.email@reqres.in\",\n  \"password\": \"wrongpassword\"\n}"},
+        "url": {"raw": "https://reqres.in/api/login","protocol": "https","host": ["reqres","in"],"path": ["api","login"]}
+      },
+      "response": [],
+      "event": [{"listen": "test","script": {"exec": ["pm.test('Status code is 400', function () { pm.response.to.have.status(400); });","pm.test('Response has error message', function () { var jsonData = pm.response.json(); pm.expect(jsonData).to.have.property('error'); });"],"type": "text/javascript"}}]
+    },
+    {
+      "name": "Test Case 3: Missing password",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type","value": "application/json"}],
+        "body": {"mode": "raw","raw": "{\n  \"email\": \"eve.holt@reqres.in\"\n}"},
+        "url": {"raw": "https://reqres.in/api/login","protocol": "https","host": ["reqres","in"],"path": ["api","login"]}
+      },
+      "response": [],
+      "event": [{"listen": "test","script": {"exec": ["pm.test('Status code is 400', function () { pm.response.to.have.status(400); });","pm.test('Response contains error \"Missing password\"', function () { var jsonData = pm.response.json(); pm.expect(jsonData.error).to.eql('Missing password'); });"],"type": "text/javascript"}}]
+    },
+    {
+      "name": "Test Case 4: Missing email",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type","value": "application/json"}],
+        "body": {"mode": "raw","raw": "{\n  \"password\": \"cityslicka\"\n}"},
+        "url": {"raw": "https://reqres.in/api/login","protocol": "https","host": ["reqres","in"],"path": ["api","login"]}
+      },
+      "response": [],
+      "event": [{"listen": "test","script": {"exec": ["pm.test('Status code is 400', function () { pm.response.to.have.status(400); });","pm.test('Response contains error \"Missing email\"', function () { var jsonData = pm.response.json(); pm.expect(jsonData.error).to.eql('Missing email'); });"],"type": "text/javascript"}}]
+    },
+    {
+      "name": "Test Case 5: Bonus - Data-driven login",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type","value": "application/json"}],
+        "body": {"mode": "raw","raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}"},
+        "url": {"raw": "https://reqres.in/api/login","protocol": "https","host": ["reqres","in"],"path": ["api","login"]}
+      },
+      "response": [],
+      "event": [{"listen": "test","script": {"exec": ["pm.test('Status code is 200 or 400 depending on credentials', function () { pm.expect([200,400]).to.include(pm.response.code); });","pm.test('Response contains either token or error', function () { var jsonData = pm.response.json(); pm.expect(jsonData).to.have.any.keys('token','error'); });"],"type": "text/javascript"}}]
+    }
+  ]
+}
